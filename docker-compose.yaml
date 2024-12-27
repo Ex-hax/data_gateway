@@ -1,0 +1,51 @@
+services:    
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: webserver
+    ports:
+      - "5000:5000"
+    volumes:
+      - quart_db_migrate_microservice_backend:/app/migrations
+    environment:
+      - QUART_APP=app
+      - DEBUG=False
+      - ENV=production
+      - UPLOAD_FOLDER=static
+      - SESSION_COOKIE_SECURE=True
+      - SESSION_COOKIE_HTTPONLY=True
+      - SESSION_COOKIE_SAMESITE=Lax
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:1234@postgres_microservice_backend:5435/microservice_dev
+      - SQLALCHEMY_TRACK_MODIFICATIONS=False
+      - QUART_AUTH_COOKIE_SECURE=True
+      - QUART_AUTH_COOKIE_HTTP_ONLY=True
+      - QUART_AUTH_COOKIE_SAMESITE=Lax
+      - QUART_AUTH_DURATION=31536000
+    command: ["hypercorn", "--bind", "0.0.0.0:5000", "app:app"]
+    depends_on:
+      postgres_microservice_backend:
+        condition: service_healthy
+
+  postgres_microservice_backend:
+    image: postgres:13
+    container_name: postgres_microservice_backend
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: microservice_dev
+      PGPORT: 5435
+    ports:
+      - "5435:5435"  # Mapping local port 5433 to container port 5432
+    volumes:
+      - postgres_data_microservice_backend:/var/lib/postgresql/data
+      # - ./init_scripts/database_backend:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  quart_db_migrate_microservice_backend:
+  postgres_data_microservice_backend:

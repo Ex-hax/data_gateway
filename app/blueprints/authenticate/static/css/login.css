@@ -1,0 +1,40 @@
+body {
+    background-color: #000;
+}
+.container {
+    position: absolute;
+    width: 345px;
+    height: 300px;
+    z-index: 15;
+    display: flex;
+    justify-content: center;
+    top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -150px;
+}
+input#user_name, input#password {
+    border: none;
+    border-bottom: solid #FFD700 1px;
+    outline: none;
+    background-color: transparent;
+    color: #35C4F0;
+}
+input#user_name:hover, input#password:hover{
+    border: none;
+    border-bottom: solid #35C4F0 1px;
+    outline: none;
+    background-color: transparent;
+    color: #FFD700;
+}
+input#submit {
+    width: 100%;
+    background-color: transparent;
+    border: solid #FFD700 1px;
+    color: #35C4F0;
+}
+input#submit:hover {
+    width: 100%;
+    background-color: transparent;
+    border: solid #35C4F0 1px;
+    color: #FFD700;
+}
