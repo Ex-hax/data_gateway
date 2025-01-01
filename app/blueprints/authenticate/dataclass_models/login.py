@@ -1,11 +1,7 @@
 from pydantic.dataclasses import dataclass
+from pydantic import Field
 
 @dataclass
 class api_login_user:
-    user_name: str
-    password: str
-
-# @dataclass
-# class api_login_header:
-#     Authorization: str
-#     "Content-type": str
+    user_name: str = Field(...)
+    password: str = Field(...)
