@@ -1,6 +1,6 @@
 from config import config, base_dir
 import quart_flask_patch
-from quart import Quart, redirect, url_for, render_template_string, make_response
+from quart import Quart, redirect, url_for, render_template_string, make_response, send_from_directory
 from werkzeug.exceptions import BadRequest, Unauthorized, Forbidden, NotFound, MethodNotAllowed, RequestTimeout, TooManyRequests, NotImplemented, InternalServerError
 from jinja2 import Template
 
@@ -8,10 +8,11 @@ def create_app(config_object: config) -> Quart:
     
     from app.extensions import db, migrate, login_manager, schemas#, rate_limiter
     from quart_cors import cors
+    import os
 
     # from quart_rate_limiter import limit_blueprint, rate_limit
     # from datetime import timedelta
-    app: Quart = Quart(__name__)
+    app: Quart = Quart(__name__, static_folder='static')
     #celery = make_celery(app)
     app.config.from_object(config_object)
 
@@ -73,15 +74,15 @@ def create_app(config_object: config) -> Quart:
     app.register_blueprint(apis,url_prefix='/apis')
     # limit_blueprint(compoxer, 5, timedelta(seconds=1))
 
-    # @app.route('/favicon.ico')
-    # def favicon():
-    #     return send_from_directory(os.path.join(app.root_path, '/static/res/img'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    @app.route('/favicon.ico')
+    async def favicon():
+        return await send_from_directory(os.path.join(app.root_path, 'static/res/img'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
     @app.before_serving
     async def initialize():
         from sqlalchemy.sql import text
         from werkzeug.security import generate_password_hash
-        import os, secrets
+        import secrets
         try:
             migrate_folders: str = os.path.join(base_dir, 'migrations')
             is_migration_folder: bool = os.path.exists(migrate_folders)
