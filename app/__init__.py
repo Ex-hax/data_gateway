@@ -80,9 +80,8 @@ def create_app(config_object: config) -> Quart:
 
     @app.before_serving
     async def initialize():
+        from app.mapping import mapping
         from sqlalchemy.sql import text
-        from werkzeug.security import generate_password_hash
-        import secrets
         try:
             migrate_folders: str = os.path.join(base_dir, 'migrations')
             is_migration_folder: bool = os.path.exists(migrate_folders)
@@ -97,35 +96,27 @@ def create_app(config_object: config) -> Quart:
                 os.system('quart db upgrade')
 
             # Execute SQL scripts from the 'init_scripts/database_backend' folder
-            sql_init_scripts_folder: str = os.path.join(base_dir, 'init_scripts', 'database_backend')
-            if os.path.exists(sql_init_scripts_folder):
-                for file in os.listdir(sql_init_scripts_folder):
-                    if file.endswith('.sql'):  # Use `.sql` instead of `.csv` for SQL scripts
-                        file_path: str = os.path.join(sql_init_scripts_folder, file)
-                        with open(file_path, 'r') as f:
+            async with app.app_context():
+                for _ , value in mapping.items():
+                    try:
+                        # Read sql
+                        print('\n--------------------------------------------------')
+                        print(value['sql'])
+                        with open(value['sql'], 'r') as f:
                             sql_text: str = f.read()
+                        # Execute the SQL script
+                        print(f"Executing SQL script: {value['sql']}")
+                        sql_text: text = text(Template(sql_text).render(params=value['params']))
+                        print(sql_text)
+                        db.session.execute(sql_text)
+                        db.session.commit()
+                        print("SQL script executed successfully.")
+                        print('--------------------------------------------------\n')
 
-                            async with app.app_context():
-                                try:
-                                    # Execute the SQL script
-                                    print(f"Executing SQL script: {file_path}")
-                                    # Generate admin password
-                                    admin_password: str = secrets.token_urlsafe(16)
-                                    admin_password_hash: str = generate_password_hash(admin_password)
-                                    db.session.execute(text(Template(sql_text).render(params={
-                                        'password': admin_password_hash
-                                        # 'database_name': app.config['SQLALCHEMY_DATABASE_URI'].split('/')[-1]  # THIS LINE CAUSE ERROR TODO  change logic submit SQL job!!
-                                    })))
-                                    db.session.commit()
-                                    print("SQL script executed successfully.")
-                                    #  Write password to .password in server only knon password when see this file -> Chnage to send email ..
-                                    with open(os.path.join(base_dir,'.password'), 'w') as fs:
-                                        fs.write(admin_password)
-                                except Exception as e:
-                                    db.session.rollback()
-                                    print(f"Error executing SQL script: {e}")
-            else:
-                print(f"SQL scripts folder not found: {sql_init_scripts_folder}")
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"Error executing SQL script: {e}")
+                        print('--------------------------------------------------\n')
 
         except Exception as e:
             print('Initialize failed some feature may not work correctly')
