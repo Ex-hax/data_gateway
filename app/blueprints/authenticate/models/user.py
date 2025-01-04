@@ -34,7 +34,7 @@ class user(db.Model, AuthUser):
     def __repr__(self) -> str:
         return f'id:{self.id}, uuid:{self.uuid}, name:{self.user_name}, email:{self.email}, password:{self.password}, mobile_phone:{self.mobile_phone}\n'
 
-class LoginForms(FlaskForm):
+class login_forms(FlaskForm):
     user_name = StringField('Username',validators=[DataRequired()])
     email = StringField('Email')
     password = PasswordField('Password',validators=[DataRequired()])

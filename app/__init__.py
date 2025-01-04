@@ -114,6 +114,7 @@ def create_app(config_object: config) -> Quart:
                                     admin_password_hash: str = generate_password_hash(admin_password)
                                     db.session.execute(text(Template(sql_text).render(params={
                                         'password': admin_password_hash
+                                        # 'database_name': app.config['SQLALCHEMY_DATABASE_URI'].split('/')[-1]  # THIS LINE CAUSE ERROR TODO  change logic submit SQL job!!
                                     })))
                                     db.session.commit()
                                     print("SQL script executed successfully.")

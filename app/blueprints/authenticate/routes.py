@@ -1,8 +1,10 @@
 from app.blueprints.authenticate import authenticate
-from app.blueprints.authenticate.models.user import user, LoginForms
+from app.blueprints.authenticate.models.user import user, login_forms
+from app.blueprints.authenticate.models.login_log import login_log, login_types
 from app.blueprints.authenticate.dataclass_models.login import api_login_user
 from app.blueprints.authenticate.origin_policies import login_logout_level
 from app.blueprints.authenticate.modules.token_management import token_bearer, token_required
+from app.extensions import db
 from quart import request, redirect, render_template, abort, url_for, flash, current_app, make_response, jsonify
 from quart_auth import login_required, login_user, logout_user, current_user, AuthUser
 from quart_cors import route_cors
@@ -17,12 +19,14 @@ from datetime import datetime, timedelta
 @route_cors(**login_logout_level.setting)
 async def login():
     if request.method == 'POST':
-        form = LoginForms(await request.form)
+        form = login_forms(await request.form)
         if request.method == 'POST' and form.validate():
             _user = user.query.filter_by(user_name=form.user_name.data.lower()).first()
             if _user and _user.verify_password(form.password.data):
                 print('Password verify is ', _user.verify_password(form.password.data))
                 login_user(AuthUser(_user.id))
+                db.session.add(login_log(user_id=_user.id, login_type=login_types.COOKIE))
+                db.session.commit()
                 if not request.args.get('next'):
                     return redirect(url_for('authenticate.test'))
                 else:
@@ -30,7 +34,7 @@ async def login():
             await flash('Invalid username or password.')
             return redirect(url_for('authenticate.login'))
     if request.method == 'GET':
-        form = LoginForms()
+        form = login_forms()
         return await render_template('/login.html', form=form)
 
 @authenticate.route('/logout', methods=['GET'])
