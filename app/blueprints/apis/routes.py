@@ -15,10 +15,3 @@ async def test_route(api_current_user: user, data: test_api):
     print('API user', api_current_user)
     print('Data class', data)
     return jsonify(message='api_test_route data was accept.'), 200
-
-# @apis.route('/test', methods=['POST'])
-# @validate_request(test_api)
-# async def test_route(data: test_api):
-#     print(await request.get_json())
-#     print('Data class', data)
-#     return jsonify(message='api_test_route'), 200
