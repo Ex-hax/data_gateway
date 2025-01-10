@@ -6,21 +6,21 @@ base_dir: str = os.path.abspath(os.path.dirname(__file__))
 load_dotenv()
 
 class config:
-    QUART_APP = os.environ.get('QUART_APP')
-    ENV = os.environ.get('ENV')
-    DEBUG = os.environ.get('DEBUG').lower() == 'true'
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER')
-    SECRET_KEY = os.urandom(32)
-    SESSION_COOKIE_SECURE=os.environ.get('SESSION_COOKIE_SECURE').lower() == 'true'
-    SESSION_COOKIE_HTTPONLY=os.environ.get('SESSION_COOKIE_HTTPONLY').lower() == 'true'
-    SESSION_COOKIE_SAMESITE=os.environ.get('SESSION_COOKIE_SAMESITE')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
-    SQLALCHEMY_TRACK_MODIFICATIONS=os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS').lower() == 'true'
-    QUART_AUTH_COOKIE_HTTP_ONLY=os.environ.get('QUART_AUTH_COOKIE_HTTP_ONLY').lower() == 'true'
-    QUART_AUTH_COOKIE_SECURE=os.environ.get('QUART_AUTH_COOKIE_SECURE').lower() == 'true'
-    QUART_AUTH_COOKIE_SAMESITE=os.environ.get('QUART_AUTH_COOKIE_SAMESITE')
-    QUART_AUTH_DURATION=int(os.environ.get('QUART_AUTH_DURATION'))
-    QUART_AUTH_SALT=secrets.token_urlsafe(16)
+    QUART_APP: str = os.environ.get('QUART_APP')
+    ENV: str = os.environ.get('ENV')
+    DEBUG: bool = os.environ.get('DEBUG').lower() == 'true'
+    UPLOAD_FOLDER: str = os.environ.get('UPLOAD_FOLDER')
+    SECRET_KEY: str = os.urandom(32)
+    SESSION_COOKIE_SECURE: bool = os.environ.get('SESSION_COOKIE_SECURE').lower() == 'true'
+    SESSION_COOKIE_HTTPONLY: bool = os.environ.get('SESSION_COOKIE_HTTPONLY').lower() == 'true'
+    SESSION_COOKIE_SAMESITE: str = os.environ.get('SESSION_COOKIE_SAMESITE')
+    SQLALCHEMY_DATABASE_URI: str = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS: bool = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS').lower() == 'true'
+    QUART_AUTH_COOKIE_HTTP_ONLY: bool = os.environ.get('QUART_AUTH_COOKIE_HTTP_ONLY').lower() == 'true'
+    QUART_AUTH_COOKIE_SECURE: bool = os.environ.get('QUART_AUTH_COOKIE_SECURE').lower() == 'true'
+    QUART_AUTH_COOKIE_SAMESITE: str = os.environ.get('QUART_AUTH_COOKIE_SAMESITE')
+    QUART_AUTH_DURATION:int = int(os.environ.get('QUART_AUTH_DURATION'))
+    QUART_AUTH_SALT: str = secrets.token_urlsafe(16)
     
     # QUART_DB_DATABASE_URL = os.environ.get('QUART_DB_DATABASE_URL')
     # QUART_DB_MIGRATIONS_FOLDER = os.environ.get('QUART_DB_MIGRATIONS_FOLDER')
